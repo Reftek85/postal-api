@@ -6,3 +6,6 @@ export const randomAlphaNumeric = customAlphabet(
 export const randomAlphabetic = customAlphabet(
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 );
+export const randomAlphaNumSymbol = customAlphabet(
+  "!$%&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+);

@@ -5,6 +5,7 @@ import { addressEndpoints, credentials, routes } from "./schema";
 import { eq, sql } from "drizzle-orm";
 import { randomAlphaNumeric } from "./utils";
 import { randomAlphaNumSymbol } from "./utils";
+import { generateCredentialKey } from "./utils";
 import { cors } from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import "./env";
@@ -127,7 +128,7 @@ const app = new Elysia()
       set.status = 404;
     }
     return data || {};
-  }
+  })
   .post(
     "/create",
     async ({ body }) => {
@@ -135,77 +136,7 @@ const app = new Elysia()
 
       // Create credential
       const credentialUUID = randomUUID();
-      const credentialKey = randomAlphaNumSymbol(24);
-      const [{ insertId: credentialId }] = await db.insert(credentials).values({
-        createdAt: sql`CURRENT_TIMESTAMP`,
-        updatedAt: sql`CURRENT_TIMESTAMP`,
-        type: "SMTP",
-        serverId,
-        name,
-        uuid: credentialUUID,
-        hold: 0,
-        key: credentialKey,
-      });
-
-      // Create address
-      const addressUUID = randomUUID();
-      const [{ insertId: addressId }] = await db.insert(addressEndpoints).values({
-        createdAt: sql`CURRENT_TIMESTAMP`,
-        updatedAt: sql`CURRENT_TIMESTAMP`,
-        address,
-        uuid: addressUUID,
-        serverId,
-      });
-
-      // Create route
-      const routeUUID = randomUUID();
-      const routeToken = randomAlphaNumeric(8);
-      const [{ insertId: routeId }] = await db.insert(routes).values({
-        createdAt: sql`CURRENT_TIMESTAMP`,
-        updatedAt: sql`CURRENT_TIMESTAMP`,
-        spamMode: "Mark",
-        name,
-        serverId,
-        domainId,
-        endpointId: addressId,
-        endpointType: "AddressEndpoint",
-        token: routeToken,
-        uuid: routeUUID,
-        mode: "Endpoint",
-      });
-
-      return {
-        credential: {
-          name,
-          key: credentialKey,
-          credentialId,
-        },
-        address: {
-          addressId,
-        },
-        route: {
-          routeId,
-          routeEmail: `${routeToken}@${process.env.SERVER_ROUTES_DOMAIN}`,
-        },
-      };
-    },
-    {
-      body: t.Object({
-        serverId: t.Number(),
-        name: t.String(),
-        address: t.String(),
-        domainId: t.Number(),
-      }),
-    }
-  )
-  .post(
-    "/create",
-    async ({ body }) => {
-      const { serverId, name, address, domainId } = body;
-
-      // Create credential
-      const credentialUUID = randomUUID();
-      const credentialKey = randomAlphaNumSymbol(24);
+      const credentialKey = generateCredentialKey(24);
       const [{ insertId: credentialId }] = await db.insert(credentials).values({
         createdAt: sql`CURRENT_TIMESTAMP`,
         updatedAt: sql`CURRENT_TIMESTAMP`,

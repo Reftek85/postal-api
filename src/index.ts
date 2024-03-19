@@ -5,7 +5,7 @@ import { addressEndpoints, credentials, routes } from "./schema";
 import { eq, sql } from "drizzle-orm";
 import { randomAlphaNumeric } from "./utils";
 import { randomAlphaNumSymbol } from "./utils";
-import { generateCredentialKey } from "./utils";
+import { generatekey } from "./utils";
 import { cors } from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import "./env";
@@ -19,7 +19,7 @@ const app = new Elysia()
     async ({ body }) => {
       const { serverId, name } = body;
       const uuid = randomUUID();
-      const key = randomAlphaNumeric(24);
+      const key = generatekey(16);
       const [{ insertId }] = await db.insert(credentials).values({
         createdAt: sql`CURRENT_TIMESTAMP`,
         updatedAt: sql`CURRENT_TIMESTAMP`,
@@ -136,7 +136,7 @@ const app = new Elysia()
 
       // Create credential
       const credentialUUID = randomUUID();
-      const credentialKey = generateCredentialKey(24);
+      const credentialKey = generatekey(16);
       const [{ insertId: credentialId }] = await db.insert(credentials).values({
         createdAt: sql`CURRENT_TIMESTAMP`,
         updatedAt: sql`CURRENT_TIMESTAMP`,

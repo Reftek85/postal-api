@@ -53,6 +53,9 @@ function generateCredentialKey(length: number): string {
 }
 
 function generateRandomChar(type: string): string {
+  // Define the probability of choosing a symbol
+  const symbolProbability = 0.2; // Adjust as needed, this example sets it to 20%
+
   switch (type) {
     case 'lowercase':
       return String.fromCharCode(Math.floor(Math.random() * 26) + 97); // ASCII code for lowercase letters
@@ -61,9 +64,15 @@ function generateRandomChar(type: string): string {
     case 'numeric':
       return String.fromCharCode(Math.floor(Math.random() * 10) + 48); // ASCII code for digits
     case 'symbol':
-      return randomSymbols();
+      // Determine whether to choose a symbol based on the probability
+      if (Math.random() < symbolProbability) {
+        const symbols = '!@#$%^&*()'; // Define the set of symbols
+        return symbols.charAt(Math.floor(Math.random() * symbols.length));
+      }
+      // If the probability condition is not met, fall through to default case
     default:
-      return ''; // Return empty string for unknown types
+      // For cases other than 'symbol', return empty string
+      return '';
   }
 }
 

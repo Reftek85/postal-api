@@ -40,7 +40,7 @@ export function generateCredentialKey(length: number): string {
   key += randomSymbols();
 
   // Fill the rest of the key with random characters
-  const remainingLength = length - 8; // 2 from each type
+  const remainingLength = Math.max(0, length - 8); // Ensure non-negative length
   const allChars = randomLowercase() + randomUppercase() + randomNumeric() + randomSymbols();
   for (let i = 0; i < remainingLength && key.length < length; i++) {
     key += allChars[Math.floor(Math.random() * allChars.length)];

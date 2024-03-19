@@ -27,53 +27,22 @@ export function generateCredentialKey2(length: number): string {
 }
 
 function generateCredentialKey(length: number): string {
-  const requiredTypes = ['lowercase', 'uppercase', 'numeric', 'symbol'];
+  // Generate a random key of required length
+  let key = randomAlphaNumeric(length);
 
-  // Generate at least two characters of each required type
-  let key = '';
-  for (const type of requiredTypes) {
-    key += generateRandomChar(type);
-    key += generateRandomChar(type);
-  }
+  // Subtract 8 characters
+  key = key.slice(0, length - 8);
 
-  // Generate the rest of the key
-  const remainingLength = Math.max(0, length - 8); // Ensure non-negative length after considering required types
-  for (let i = 0; i < remainingLength; i++) {
-    const randomType = requiredTypes[Math.floor(Math.random() * requiredTypes.length)];
-    key += generateRandomChar(randomType);
-  }
+  // Add 2 random characters from each category
+  key += randomLowercase() + randomLowercase();
+  key += randomUppercase() + randomUppercase();
+  key += randomSymbols() + randomSymbols();
+  key += randomNumeric() + randomNumeric();
 
-  // Shuffle the generated key
+  // Shuffle the final key
   key = shuffleString(key);
 
-  // Trim the key to the specified length
-  key = key.slice(0, length);
-
   return key;
-}
-
-function generateRandomChar(type: string): string {
-  // Define the probability of choosing a symbol
-  const symbolProbability = 0.2; // Adjust as needed, this example sets it to 20%
-
-  switch (type) {
-    case 'lowercase':
-      return String.fromCharCode(Math.floor(Math.random() * 26) + 97); // ASCII code for lowercase letters
-    case 'uppercase':
-      return String.fromCharCode(Math.floor(Math.random() * 26) + 65); // ASCII code for uppercase letters
-    case 'numeric':
-      return String.fromCharCode(Math.floor(Math.random() * 10) + 48); // ASCII code for digits
-    case 'symbol':
-      // Determine whether to choose a symbol based on the probability
-      if (Math.random() < symbolProbability) {
-        const symbols = '!@#$%^&*()'; // Define the set of symbols
-        return symbols.charAt(Math.floor(Math.random() * symbols.length));
-      }
-      // If the probability condition is not met, fall through to default case
-    default:
-      // For cases other than 'symbol', return empty string
-      return '';
-  }
 }
 
 function shuffleString(str: string): string {
@@ -85,7 +54,6 @@ function shuffleString(str: string): string {
   return array.join('');
 }
 
-
 // Test function to generate and output keys
 function testGenerateCredentialKeys(numKeys: number, keyLength: number) {
   console.log(`Generating ${numKeys} keys with a length of ${keyLength} characters:`);
@@ -93,5 +61,6 @@ function testGenerateCredentialKeys(numKeys: number, keyLength: number) {
     console.log(`${i + 1}. ${generateCredentialKey(keyLength)}`);
   }
 }
+
 // Call the function with the desired parameters
 testGenerateCredentialKeys(15, 24);

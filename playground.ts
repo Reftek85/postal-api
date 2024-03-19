@@ -26,20 +26,29 @@ export function generateCredentialKey2(length: number): string {
   return key;
 }
 
+function generateRandomChars(length: number, chars: string): string {
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 function generateCredentialKey(length: number): string {
-  // Generate a random key of required length
-  let key = randomAlphaNumeric(length);
+  const requiredTypes = ['lowercase', 'uppercase', 'numeric', 'symbol'];
 
-  // Subtract 8 characters
-  key = key.slice(0, length - 8);
+  // Generate random key with all types of characters
+  let key = generateRandomChars(length - 8, "!$%&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 
-  // Add 2 random characters from each category
-  key += randomLowercase() + randomLowercase();
-  key += randomUppercase() + randomUppercase();
-  key += randomSymbols() + randomSymbols();
-  key += randomNumeric() + randomNumeric();
+  // Add two characters of each required type
+  requiredTypes.forEach(type => {
+    key += generateRandomChars(2, type === 'lowercase' ? randomLowercase()
+          : type === 'uppercase' ? randomUppercase()
+          : type === 'numeric' ? randomNumeric()
+          : randomSymbols());
+  });
 
-  // Shuffle the final key
+  // Shuffle the generated key
   key = shuffleString(key);
 
   return key;
@@ -54,7 +63,6 @@ function shuffleString(str: string): string {
   return array.join('');
 }
 
-// Test function to generate and output keys
 function testGenerateCredentialKeys(numKeys: number, keyLength: number) {
   console.log(`Generating ${numKeys} keys with a length of ${keyLength} characters:`);
   for (let i = 0; i < numKeys; i++) {

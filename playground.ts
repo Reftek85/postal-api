@@ -26,41 +26,56 @@ export function generateCredentialKey2(length: number): string {
   return key;
 }
 
-export function generateCredentialKey(length: number): string {
-  let key: string = '';
+function generateCredentialKey(length: number): string {
+  const requiredTypes = ['lowercase', 'uppercase', 'numeric', 'symbol'];
 
-  // Generate at least 2 characters from each type
-  key += randomLowercase();
-  key += randomLowercase();
-  key += randomUppercase();
-  key += randomUppercase();
-  key += randomNumeric();
-  key += randomNumeric();
-  key += randomSymbols();
-  key += randomSymbols();
+  // Generate at least two characters of each required type
+  let key = '';
+  for (const type of requiredTypes) {
+    key += generateRandomChar(type);
+    key += generateRandomChar(type);
+  }
 
-  // Fill the rest of the key with random characters
-  const remainingLength = Math.max(0, length - 8); // Ensure non-negative length
-  const allChars = randomLowercase() + randomUppercase() + randomNumeric() + randomSymbols();
-  for (let i = 0; i < remainingLength && key.length < length; i++) {
-    key += allChars[Math.floor(Math.random() * allChars.length)];
+  // Generate the rest of the key
+  const remainingLength = Math.max(0, length - 8); // Ensure non-negative length after considering required types
+  for (let i = 0; i < remainingLength; i++) {
+    const randomType = requiredTypes[Math.floor(Math.random() * requiredTypes.length)];
+    key += generateRandomChar(randomType);
   }
 
   // Shuffle the generated key
   key = shuffleString(key);
 
+  // Trim the key to the specified length
+  key = key.slice(0, length);
+
   return key;
 }
 
-// Function to shuffle a string
+function generateRandomChar(type: string): string {
+  switch (type) {
+    case 'lowercase':
+      return String.fromCharCode(Math.floor(Math.random() * 26) + 97); // ASCII code for lowercase letters
+    case 'uppercase':
+      return String.fromCharCode(Math.floor(Math.random() * 26) + 65); // ASCII code for uppercase letters
+    case 'numeric':
+      return String.fromCharCode(Math.floor(Math.random() * 10) + 48); // ASCII code for digits
+    case 'symbol':
+      return randomSymbols();
+    default:
+      return ''; // Return empty string for unknown types
+  }
+}
+
 function shuffleString(str: string): string {
   const array = str.split('');
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [array[i], array[j]] = [array[j], array[i]]; // Swap elements
   }
   return array.join('');
 }
+
 
 // Test function to generate and output keys
 function testGenerateCredentialKeys(numKeys: number, keyLength: number) {

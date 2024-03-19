@@ -1,4 +1,18 @@
-import { generateCredentialKey } from "./utils";
+import { customAlphabet } from "nanoid";
+
+export const randomAlphaNumeric = customAlphabet(
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+);
+export const randomAlphabetic = customAlphabet(
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+);
+export const randomAlphaNumSymbol = customAlphabet(
+  "!$%&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+);
+export const randomLowercase = customAlphabet("abcdefghijklmnopqrstuvwxyz");
+export const randomUppercase = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+export const randomNumeric = customAlphabet("0123456789");
+export const randomSymbols = customAlphabet("!$%&*");
 
 export function generateCredentialKey2(length: number): string {
   let key: string;

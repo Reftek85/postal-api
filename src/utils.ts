@@ -1,4 +1,4 @@
-import { customAlphabet } from ".\nanoid";
+import { customAlphabet } from "nanoid";
 
 export const randomAlphaNumeric = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

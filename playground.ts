@@ -12,7 +12,7 @@ export const randomAlphaNumSymbol = customAlphabet(
 export const randomLowercase = customAlphabet("abcdefghijklmnopqrstuvwxyz");
 export const randomUppercase = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 export const randomNumeric = customAlphabet("0123456789");
-export const randomSymbols = customAlphabet("!$%&*");
+const randomSymbols = customAlphabet("!$%&*", 2);
 
 export function generateCredentialKey2(length: number): string {
   let key: string;
@@ -26,49 +26,43 @@ export function generateCredentialKey2(length: number): string {
   return key;
 }
 
-function generateRandomChars(length: number, chars: string): string {
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+function generateKey(length: number): string {
+  // Generate a random key of the required length
+  let key = randomAlphaNumeric(length);
+
+  // Extract characters from the generated key
+  const chars = key.split("");
+
+  // Shuffle the characters to increase randomness
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [chars[i], chars[j]] = [chars[j], chars[i]]; // Swap elements
   }
-  return result;
-}
 
-function generateCredentialKey(length: number): string {
-  const requiredTypes = ['lowercase', 'uppercase', 'numeric', 'symbol'];
+  // Ensure at least two random symbols are included
+  const symbolIndex1 = Math.floor(Math.random() * length);
+  const symbolIndex2 = Math.floor(Math.random() * length);
+  chars[symbolIndex1] = randomSymbols(1); // Replace a character with a random symbol
+  chars[symbolIndex2] = randomSymbols(1); // Replace another character with a random symbol
 
-  // Generate random key with all types of characters
-  let key = generateRandomChars(length - 8, "!$%&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
-
-  // Add two characters of each required type
-  requiredTypes.forEach(type => {
-    key += generateRandomChars(2, type === 'lowercase' ? randomLowercase()
-          : type === 'uppercase' ? randomUppercase()
-          : type === 'numeric' ? randomNumeric()
-          : randomSymbols());
-  });
-
-  // Shuffle the generated key
-  key = shuffleString(key);
+  // Join the characters to form the final key
+  key = chars.join("");
 
   return key;
 }
 
-function shuffleString(str: string): string {
-  const array = str.split('');
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; // Swap elements
-  }
-  return array.join('');
-}
-
-function testGenerateCredentialKeys(numKeys: number, keyLength: number) {
-  console.log(`Generating ${numKeys} keys with a length of ${keyLength} characters:`);
+// Generate 15 keys with a length of 24 characters each
+function generateKeys(numKeys: number, keyLength: number): string[] {
+  const keys: string[] = [];
   for (let i = 0; i < numKeys; i++) {
-    console.log(`${i + 1}. ${generateCredentialKey(keyLength)}`);
+    const key = generateKey(keyLength);
+    keys.push(key);
   }
+  return keys;
 }
 
+// Test the key generation
+const keys = generateKeys(15, 24);
+keys.forEach((key, index) => console.log(`${index + 1}. ${key}`));
 // Call the function with the desired parameters
-testGenerateCredentialKeys(15, 24);
+//testGenerateCredentialKeys(15, 24);

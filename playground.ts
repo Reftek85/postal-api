@@ -69,3 +69,5 @@ function testGenerateCredentialKeys(numKeys: number, keyLength: number) {
     console.log(`${i + 1}. ${generateCredentialKey(keyLength)}`);
   }
 }
+// Call the function with the desired parameters
+testGenerateCredentialKeys(15, 24);

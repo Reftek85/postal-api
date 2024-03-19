@@ -39,11 +39,13 @@ function generateKey(length: number): string {
     [chars[i], chars[j]] = [chars[j], chars[i]]; // Swap elements
   }
 
-  // Ensure at least two random symbols are included
+  // Ensure at least three random symbols are included
   const symbolIndex1 = Math.floor(Math.random() * length);
   const symbolIndex2 = Math.floor(Math.random() * length);
+  const symbolIndex3 = Math.floor(Math.random() * length);
   chars[symbolIndex1] = randomSymbols(1); // Replace a character with a random symbol
   chars[symbolIndex2] = randomSymbols(1); // Replace another character with a random symbol
+  chars[symbolIndex3] = randomSymbols(1); // Replace another character with a random symbol
 
   // Join the characters to form the final key
   key = chars.join("");
@@ -60,9 +62,17 @@ function generateKeys(numKeys: number, keyLength: number): string[] {
   }
   return keys;
 }
-
 // Test the key generation
 const keys = generateKeys(15, 24);
 keys.forEach((key, index) => console.log(`${index + 1}. ${key}`));
+
+// Test function to generate and output keys
+function testGenerateCredentialKeys(numKeys: number, keyLength: number) {
+  console.log(`Generating ${numKeys} keys with a length of ${keyLength} characters:`);
+  for (let i = 0; i < numKeys; i++) {
+    console.log(`${i + 1}. ${generateKey(keyLength)}`);
+  }
+}
+
 // Call the function with the desired parameters
-//testGenerateCredentialKeys(15, 24);
+testGenerateCredentialKeys(15, 16);

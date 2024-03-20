@@ -1,3 +1,17 @@
+import { connection as rawMySqlConnection, db } from "./db";
+import { Name, eq, sql } from "drizzle-orm";
+import { randomUUID } from "crypto";
+import {
+  organizations,
+  domains,
+  credentials,
+  organizationIpPools,
+  servers,
+  webhooks,
+  httpEndpoints,
+  routes,
+} from "./schema";
+
 import { customAlphabet } from "nanoid";
 
 export const randomAlphaNumeric = customAlphabet(

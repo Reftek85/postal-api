@@ -1,78 +1,56 @@
 import { customAlphabet } from "nanoid";
+import { pgTable, integer, varchar, text, } from 'drizzle-orm/pg-core';
+ // Import necessary functions from drizzle-orm
+import { eq, sql, relations } from "drizzle-orm";
+import { db } from "./src/db";
+import { routes, addressEndpoints, credentials } from "./src/schema";
+import { routesRelations, credentialsRelations }from "./src/utils";
 
-export const randomAlphaNumeric = customAlphabet(
-  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-);
-export const randomAlphabetic = customAlphabet(
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-);
-export const randomAlphaNumSymbol = customAlphabet(
-  "!$%&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-);
-export const randomLowercase = customAlphabet("abcdefghijklmnopqrstuvwxyz");
-export const randomUppercase = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-export const randomNumeric = customAlphabet("0123456789");
-const randomSymbols = customAlphabet("!$%&*", 2);
+async function fetchRouteAndAddressEndpoint(name: string, address: stringServer) {
+  try {
+      // Step 1: Query for the Route Based on Name
+      const route = await db.query.routes.findFirst({
+          where: eq(routes.name, name),
+      });
 
-export function generateCredentialKey2(length: number): string {
-  let key: string;
-  let symbolCount: number;
+      if (!route) {
+          throw new Error(`Route not found for name: ${name}`);
+      }
 
-  do {
-    key = randomAlphaNumSymbol(length);
-    symbolCount = (key.match(/[^a-zA-Z0-9]/g) || []).length;
-  } while (!(symbolCount >= 3 && /[a-z]/.test(key) && /[A-Z]/.test(key) && /\d/.test(key)));
+      const endpointId = route.endpointId;
 
-  return key;
-}
+      // Step 2: Query for the Address Endpoint Row using the stored endpointId
+      const addressEndpoint = await db.query.addressEndpoints.findFirst({
+          where: eq(addressEndpoints.id, endpointId),
+      });
 
-function generateKey(length: number): string {
-  // Generate a random key of the required length
-  let key = randomAlphaNumeric(length);
+      if (!addressEndpoint) {
+          throw new Error(`Address endpoint not found for route: ${name}`);
+      }
 
-  // Extract characters from the generated key
-  const chars = key.split("");
+      // Step 3: Update the Address Endpoint with the new address
+      await db.update(addressEndpoints)
+          .set({
+              address: address,
+              updatedAt: sql`CURRENT_TIMESTAMP`
+          })
+          .where({ id: addressEndpoint.id });
 
-  // Shuffle the characters to increase randomness
-  for (let i = chars.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [chars[i], chars[j]] = [chars[j], chars[i]]; // Swap elements
-  }
+      // Log the retrieved route and address endpoint
+      console.log("Route:", route.name);
+      console.log("Updated Address Endpoint:", address);
 
-  // Ensure at least three random symbols are included
-  const symbolIndex1 = Math.floor(Math.random() * length);
-  const symbolIndex2 = Math.floor(Math.random() * length);
-  const symbolIndex3 = Math.floor(Math.random() * length);
-  chars[symbolIndex1] = randomSymbols(1); // Replace a character with a random symbol
-  chars[symbolIndex2] = randomSymbols(1); // Replace another character with a random symbol
-  chars[symbolIndex3] = randomSymbols(1); // Replace another character with a random symbol
-
-  // Join the characters to form the final key
-  key = chars.join("");
-
-  return key;
-}
-
-// Generate 15 keys with a length of 24 characters each
-function generateKeys(numKeys: number, keyLength: number): string[] {
-  const keys: string[] = [];
-  for (let i = 0; i < numKeys; i++) {
-    const key = generateKey(keyLength);
-    keys.push(key);
-  }
-  return keys;
-}
-// Test the key generation
-const keys = generateKeys(15, 24);
-keys.forEach((key, index) => console.log(`${index + 1}. ${key}`));
-
-// Test function to generate and output keys
-function testGenerateCredentialKeys(numKeys: number, keyLength: number) {
-  console.log(`Generating ${numKeys} keys with a length of ${keyLength} characters:`);
-  for (let i = 0; i < numKeys; i++) {
-    console.log(`${i + 1}. ${generateKey(keyLength)}`);
+      // Return the updated address details along with the route name and endpointId
+      return {
+          name: route.name,
+          endpointId: endpointId
+      };
+  } catch (error: any) {
+      console.error("An error occurred:", error.message || 'An error occurred');
+      return null; // Return null to indicate failure
   }
 }
 
-// Call the function with the desired parameters
-testGenerateCredentialKeys(15, 16);
+
+// Call the function with the name of the route
+fetchRouteAndAddressEndpoint('A00004', 'test666@domain.com');

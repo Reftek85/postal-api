@@ -2,10 +2,12 @@ import { Elysia, t } from "elysia";
 import { db } from "./db";
 import { randomUUID } from "crypto";
 import { addressEndpoints, credentials, routes } from "./schema";
-import { eq, sql } from "drizzle-orm";
+import { pgTable, serial, text, integer, boolean } from 'drizzle-orm/pg-core';
+import { eq, sql, relations } from "drizzle-orm";
 import { randomAlphaNumeric } from "./utils";
 import { randomAlphaNumSymbol } from "./utils";
-import { generatekey } from "./utils";
+import { routesRelations, credentialsRelations  } from "./utils";
+import { generatekey, fetchRouteAndAddressEndpoint } from "./utils";
 import { cors } from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 import "./env";
@@ -267,6 +269,36 @@ const app = new Elysia()
       }),
     }
   )
+  .post(
+    "/updateaddress",
+    async ({ body }) => {
+        const { name, address, serverid } = body;
+
+        // Call fetchRouteAndAddressEndpoint to update the address
+        const updatedDetails = await fetchRouteAndAddressEndpoint(name, address, serverid);
+
+        if (!updatedDetails) {
+            return { error: `Failed to update address for route with name ${name}.` };
+        }
+
+        // Return the updated endpoint information
+        return {
+            addressEndpoint: {
+                name: updatedDetails.name,
+                Newaddress: address,
+                serverid: serverid,
+            }
+        };
+    },
+    {
+        body: t.Object({
+            serverid: t.String(),
+            name: t.String(),
+            address: t.String()          
+        }),
+    }
+)
+
   .listen(3000);
 
 console.log(

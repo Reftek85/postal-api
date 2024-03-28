@@ -10,6 +10,8 @@ import {
   decimal,
   bigint,
 } from "drizzle-orm/mysql-core";
+import { pgTable,} from 'drizzle-orm/pg-core';
+
 
 export const additionalRouteEndpoints = mysqlTable(
   "additional_route_endpoints",
@@ -22,16 +24,6 @@ export const additionalRouteEndpoints = mysqlTable(
     updatedAt: datetime("updated_at", { mode: "string" }).notNull(),
   }
 );
-
-export const addressEndpoints = mysqlTable("address_endpoints", {
-  id: int("id").autoincrement().notNull(),
-  serverId: int("server_id"),
-  uuid: varchar("uuid", { length: 255 }),
-  address: varchar("address", { length: 255 }),
-  lastUsedAt: datetime("last_used_at", { mode: "string" }),
-  createdAt: datetime("created_at", { mode: "string" }).notNull(),
-  updatedAt: datetime("updated_at", { mode: "string" }).notNull(),
-});
 
 export const arInternalMetadata = mysqlTable("ar_internal_metadata", {
   key: varchar("key", { length: 255 }).notNull(),
@@ -93,21 +85,6 @@ export const authieSessions = mysqlTable(
   }
 );
 
-export const credentials = mysqlTable("credentials", {
-  id: int("id").autoincrement().notNull(),
-  serverId: int("server_id"),
-  key: varchar("key", { length: 255 }),
-  type: varchar("type", { length: 255 }),
-  name: varchar("name", { length: 255 }),
-  options: text("options"),
-  lastUsedAt: datetime("last_used_at", { mode: "string", fsp: 6 }).default(
-    "NULL"
-  ),
-  createdAt: datetime("created_at", { mode: "string", fsp: 6 }),
-  updatedAt: datetime("updated_at", { mode: "string", fsp: 6 }),
-  hold: tinyint("hold").default(0),
-  uuid: varchar("uuid", { length: 255 }),
-});
 
 export const domains = mysqlTable(
   "domains",
@@ -294,6 +271,16 @@ export const queuedMessages = mysqlTable(
   }
 );
 
+export const addressEndpoints = mysqlTable("address_endpoints", {
+  id: int("id").autoincrement().notNull(),
+  serverId: int("server_id"),
+  uuid: varchar("uuid", { length: 255 }),
+  address: varchar("address", { length: 255 }),
+  lastUsedAt: datetime("last_used_at", { mode: "string" }),
+  createdAt: datetime("created_at", { mode: "string" }).notNull(),
+  updatedAt: datetime("updated_at", { mode: "string" }).notNull(),
+});
+
 export const routes = mysqlTable(
   "routes",
   {
@@ -309,13 +296,29 @@ export const routes = mysqlTable(
     updatedAt: datetime("updated_at", { mode: "string", fsp: 6 }),
     token: varchar("token", { length: 255 }),
     mode: varchar("mode", { length: 255 }),
-  },
+    },
   (table) => {
     return {
       indexRoutesOnToken: index("index_routes_on_token").on(table.token),
     };
   }
 );
+
+export const credentials = mysqlTable("credentials", {
+  id: int("id").autoincrement().notNull(),
+  serverId: int("server_id"),
+  key: varchar("key", { length: 255 }),
+  type: varchar("type", { length: 255 }),
+  name: varchar("name", { length: 255 }),
+  options: text("options"),
+  lastUsedAt: datetime("last_used_at", { mode: "string", fsp: 6 }).default(
+    "NULL"
+  ),
+  createdAt: datetime("created_at", { mode: "string", fsp: 6 }),
+  updatedAt: datetime("updated_at", { mode: "string", fsp: 6 }),
+  hold: tinyint("hold").default(0),
+  uuid: varchar("uuid", { length: 255 }),
+});
 
 export const scheduledTasks = mysqlTable(
   "scheduled_tasks",

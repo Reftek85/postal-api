@@ -10,7 +10,6 @@ import {
   decimal,
   bigint,
 } from "drizzle-orm/mysql-core";
-import { pgTable,} from 'drizzle-orm/pg-core';
 
 
 export const additionalRouteEndpoints = mysqlTable(

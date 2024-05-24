@@ -1,8 +1,7 @@
 import { connection as rawMySqlConnection, db } from "./db";
 import { Name, eq, sql } from "drizzle-orm";
-import { pgTable, serial, text, integer, boolean } from 'drizzle-orm/pg-core';
-import { randomUUID } from "crypto";
 import { relations } from 'drizzle-orm';
+import { customAlphabet } from "nanoid";
 import {
   organizations,
   domains,
@@ -14,8 +13,6 @@ import {
   routes,
   addressEndpoints,
 } from "./schema";
-
-import { customAlphabet } from "nanoid";
 
 export const randomAlphaNumeric = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

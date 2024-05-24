@@ -1,7 +1,6 @@
 {
   "name": "app",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "start": "NODE_ENV=production bun src/index.ts"
@@ -13,11 +12,11 @@
     "drizzle-kit": "^0.20.14",
     "drizzle-orm": "^0.30.2",
     "elysia": "latest",
+    "nanoid": "5.0.7",
     "mysql2": "^3.9.2"
   },
   "devDependencies": {
-    "bun-types": "latest",
-    "ts-node": "^10.9.2"
+    "bun-types": "latest"
   },
   "module": "src/index.ts"
 }
